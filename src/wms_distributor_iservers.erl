@@ -20,7 +20,8 @@
          stop_interaction/3,
          login/3,
          logout/2,
-         get_actor_node/2, get_interaction_data/3]).
+         get_actor_node/2,
+         get_interaction_data/3]).
 
 %% =============================================================================
 %% Types

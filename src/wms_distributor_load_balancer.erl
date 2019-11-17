@@ -171,7 +171,8 @@ handle_info(Msg, State) ->
 -spec handle_call(Info :: any(), From :: {pid(), term()}, State :: state()) ->
   {reply, term(), State :: state()}.
 handle_call(Cmd, _From, #state{phase = Phase} = State) when Phase =/= started ->
-  ?error("~p command was received, but not initialized yet", [Cmd]),
+  ?error("DRT-0001",
+         "~p command was received, but not initialized yet", [Cmd]),
 
   {reply, {error, not_initialized}, State};
 handle_call({login, Node, InteractionIDS}, _From, #state{interactors = Interactors} = State) ->
@@ -249,7 +250,8 @@ interaction_request(TaskInstanceID,
   case wms_distributor_iservers:get_actor_node(InteractionID, Interactors) of
     undefined ->
       % no operator actor
-      ?error("Operator actor was not found for ~s task, to execute ~s "
+      ?error("DRT-0002",
+             "Operator actor was not found for ~s task, to execute ~s "
              "interaction which is identified by ~s",
              [TaskInstanceID, InteractionID, InteractionRequestID]),
       ok = wms_dist:call(wms_engine_actor,
@@ -284,7 +286,8 @@ call_interaction(TaskInstanceID,
                                                      InteractionID,
                                                      Parameters]) of
     {badrpc, Reason} ->
-      ?error("Unable to call ~s interaction from ~s "
+      ?error("DRT-0003",
+             "Unable to call ~s interaction from ~s "
              " which is identified by ~s on node ~s. Reason : ~0p",
              [InteractionID, TaskInstanceID, InteractionRequestID, Node, Reason]),
       ok = wms_dist:call(wms_engine_actor,
@@ -317,8 +320,9 @@ interaction_reply(Node, InteractionRequestID, Result,
   NewInteractors =
     case wms_distributor_iservers:stop_interaction(Node, InteractionRequestID, Interactors) of
       {undefined, Interactors2} ->
-        ?error("No task was found for interaction reply from ~s node, ~s with "
-               "interaction request ID", [Node, InteractionRequestID]),
+        ?error("DRT-0004",
+          "No task was found for interaction reply from ~s node, ~s with "
+          "interaction request ID", [Node, InteractionRequestID]),
         Interactors2;
       {{TaskInstanceID, InteractionID}, Interactors2} ->
         ok = wms_dist:call(wms_engine_actor,
@@ -334,7 +338,7 @@ broken_interactions([]) ->
 broken_interactions([#{task_instance_id := TaskInstanceID,
                        interaction_id := InteractionID,
                        interaction_request_id := InteractionRequestID} | Rest]) ->
-  ?error("~s interaction is broken", [InteractionID]),
+  ?error("DRT-0005", "~s interaction was broken", [InteractionID]),
   ok = wms_dist:call(wms_engine_actor,
                      interaction_reply,
                      [TaskInstanceID, InteractionID,
@@ -347,7 +351,8 @@ broken_interactions([#{task_instance_id := TaskInstanceID,
 keepalive(Node, InteractionRequestID, #state{interactors = Interactors}) ->
   case wms_distributor_iservers:get_interaction_data(Node, InteractionRequestID, Interactors) of
     undefined ->
-      ?error("No task was found on ~s node, ~s interaction request ID",
+      ?error("DRT-0006",
+             "No task was found on ~s node, ~s interaction request ID",
              [Node, InteractionRequestID]),
       {error, not_found};
     {TaskInstanceID, InteractionID} ->
