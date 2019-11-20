@@ -347,17 +347,18 @@ broken_interactions([#{task_instance_id := TaskInstanceID,
 
 
 -spec keepalive(node(), identifier_name(), state()) ->
-  ok | {error, not_found}.
-keepalive(Node, InteractionRequestID, #state{interactors = Interactors}) ->
+  state().
+keepalive(Node, InteractionRequestID, #state{interactors = Interactors} = State) ->
   case wms_distributor_iservers:get_interaction_data(Node, InteractionRequestID, Interactors) of
     undefined ->
       ?error("DRT-0006",
              "No task was found on ~s node, ~s interaction request ID",
              [Node, InteractionRequestID]),
-      {error, not_found};
+      ok;
     {TaskInstanceID, InteractionID} ->
       ok = wms_dist:call(wms_engine_actor,
                          keepalive,
                          [TaskInstanceID, InteractionID, InteractionRequestID])
 
-  end.
+  end,
+  State.
