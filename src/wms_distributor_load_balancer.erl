@@ -218,7 +218,8 @@ handle_phase(#state{phase = subscribe} = State) ->
 handle_phase(#state{phase = wait_for_cluster_ready} = State) ->
   case wms_dist:is_cluster_connected() of
     false ->
-      erlang:send_after(500, self(), start);
+      erlang:send_after(500, self(), start),
+      State;
     true ->
       ?info("Cluster is connected, starting to expore operator actors"),
       self() ! start,
