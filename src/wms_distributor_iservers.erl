@@ -1,8 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% @author Attila Makra
-%%% @copyright (C) 2019, OTP Bank Nyrt.
+%%% @copyright (C) 2019, Attila Makra.
 %%% @doc
-%%% Nyilvantartja az interakcios servereket
 %%% @end
 %%% Created : 08. Nov 2019 13:23
 %%%-------------------------------------------------------------------

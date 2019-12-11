@@ -1,5 +1,5 @@
 {application, wms_distributor,
- [{description, "An OTP application"},
+ [{description, "DatabaseHandler implementation"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {wms_distributor_app, []}},
